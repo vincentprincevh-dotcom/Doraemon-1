@@ -1,0 +1,306 @@
+Wu chang
+wuchang07
+Online
+
+Wu chang
+ started a call that lasted 36 minutes. — 25/12/2025 22:46
+Wu chang — 03/02/2026 20:37
+https://www.airbnb.com/rooms/884659165587112139?adults=4&check_in=2026-02-19&check_out=2026-02-21&guests=4&location=Bukit%20Bintang%2C%20Kuala%20Lumpur%2C%20Federal%20Territory%20of%20Kuala%20Lumpur%2C%20Malaysia&search_mode=regular_search&children=0&infants=0&pets=0&source_impression_id=p3_1770125544_P3zxcupcIAbJOesz&previous_page_section_name=1001&federated_search_id=32f1c87c-c060-48ea-a395-b12f005fe898
+Airbnb
+Condo in Kuala Lumpur · ★4.89 · 1 bedroom · 3 beds · 1 bath
+Condo in Kuala Lumpur · ★4.89 · 1 bedroom · 3 beds · 1 bath
+Wu chang — 11:50
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Doraemon & Nobita vs Monster</title>
+
+message.txt
+8 KB
+Wu chang — 12:14
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Doraemon & Nobita vs Monster</title>
+
+message.txt
+7 KB
+﻿
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Doraemon & Nobita vs Monster</title>
+
+<style>
+body{
+    background:#0b1220;
+    color:white;
+    font-family:Arial, sans-serif;
+    text-align:center;
+    padding-top:30px;
+}
+.arena{
+    display:flex;
+    justify-content:center;
+    gap:60px;
+    margin-top:40px;
+}
+.character{
+    background:#020617;
+    border:2px solid #38bdf8;
+    border-radius:16px;
+    width:260px;
+    padding:20px;
+}
+.character img{
+    width:160px;
+    border-radius:12px;
+    margin-top:10px;
+}
+.hp-bar{
+    background:#334155;
+    height:16px;
+    border-radius:10px;
+    overflow:hidden;
+    margin:8px 0;
+}
+.hp-fill{
+    height:100%;
+    background:#22c55e;
+    transition:width .3s;
+}
+button{
+    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin:6px;
+    font-size:14px;
+}
+.attack{ background:#22c55e; }
+.heavy{ background:#f97316; }
+.switch{ background:#38bdf8; }
+.reset{ background:#ef4444; color:white; }
+.choice{ background:#a855f7; }
+button:disabled{
+    background:#64748b;
+    cursor:not-allowed;
+}
+#log{
+    margin-top:25px;
+    min-height:60px;
+    white-space:pre-line;
+}
+@keyframes shake{
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-6px)}
+    50%{transform:translateX(6px)}
+    75%{transform:translateX(-6px)}
+    100%{transform:translateX(0)}
+}
+.shake{ animation:shake .4s; }
+.crit-text{
+    color:#f87171;
+    font-weight:bold;
+    font-size:20px;
+}
+#choicePanel{
+    display:none;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚔️ Doraemon & Nobita vs Monster</h1>
+<button class="switch" onclick="changeCharacter()">🔁 Change Character</button>
+
+<div class="arena">
+
+<!-- PLAYER -->
+<div class="character" id="playerBox">
+    <h2 id="charName"></h2>
+    <div class="hp-bar"><div class="hp-fill" id="playerHPBar"></div></div>
+    <p>HP: <span id="playerHP"></span> / <span id="playerMaxHP"></span></p>
+    <p>Level: <span id="playerLevel"></span></p>
+    <img id="playerImg">
+    <br>
+    <button class="attack" onclick="attack(false)">Attack</button>
+    <button class="heavy" onclick="attack(true)">Heavy</button>
+</div>
+
+<!-- MONSTER -->
+<div class="character" id="monsterBox">
+    <h2>Monster</h2>
+    <div class="hp-bar"><div class="hp-fill" id="monsterHPBar"></div></div>
+    <p>HP: <span id="monsterHP"></span></p>
+    <img src="assets/monster.png">
+</div>
+
+</div>
+
+<p id="log"></p>
+
+<div id="choicePanel">
+    <h3>🎁 Pilih Hadiah</h3>
+    <button class="choice" onclick="randomStat()">🎲 Random Stat Up</button>
+    <button class="choice" onclick="healPotion()">🧪 Heal Potion (+40 HP)</button>
+</div>
+
+<button class="reset" id="resetBtn" onclick="location.reload()" style="display:none;">
+RESET GAME
+</button>
+
+<script>
+let characters = {
+    doraemon:{
+        name:"Doraemon",
+        img:"assets/doraemon-angry.jpg",
+        level:1,
+        maxHP:100,
+        hp:100,
+        atk:10,
+        heavy:18,
+        crit:0.2
+    },
+    nobita:{
+        name:"Nobita",
+        img:"assets/nobita.png",
+        level:1,
+        maxHP:100,
+        hp:100,
+        atk:9,
+        heavy:16,
+        crit:0.15
+    }
+};
+
+let current="doraemon";
+let monsterHP=50;
+let monsterMaxHP=50;
+let monsterAtk=8;
+
+const playerImg=document.getElementById("playerImg");
+const charName=document.getElementById("charName");
+const playerHP=document.getElementById("playerHP");
+const playerMaxHP=document.getElementById("playerMaxHP");
+const playerLevel=document.getElementById("playerLevel");
+const playerHPBar=document.getElementById("playerHPBar");
+const monsterHPText=document.getElementById("monsterHP");
+const monsterHPBar=document.getElementById("monsterHPBar");
+const log=document.getElementById("log");
+const resetBtn=document.getElementById("resetBtn");
+const choicePanel=document.getElementById("choicePanel");
+const playerBox=document.getElementById("playerBox");
+const monsterBox=document.getElementById("monsterBox");
+
+function updateUI(){
+    const c=characters[current];
+    charName.innerText=c.name;
+    playerImg.src=c.img;
+    playerHP.innerText=c.hp;
+    playerMaxHP.innerText=c.maxHP;
+    playerLevel.innerText=c.level;
+    monsterHPText.innerText=monsterHP;
+    playerHPBar.style.width=(c.hp/c.maxHP*100)+"%";
+    monsterHPBar.style.width=(monsterHP/monsterMaxHP*100)+"%";
+}
+
+function changeCharacter(){
+    current=current==="doraemon"?"nobita":"doraemon";
+    updateUI();
+}
+
+/* ===== ATTACK (FIX DI SINI) ===== */
+function attack(isHeavy){
+
+    // 🔒 FIX UTAMA: kalau mati, TIDAK BISA ATTACK
+    if(characters[current].hp <= 0) return;
+
+    const c=characters[current];
+    let base=isHeavy?c.heavy:c.atk;
+    let dmg=Math.floor(Math.random()*base)+5;
+
+    let crit=Math.random()<c.crit;
+    if(crit) dmg*=2;
+
+    monsterHP-=dmg;
+    if(monsterHP<0) monsterHP=0;
+
+    monsterBox.classList.add("shake");
+    setTimeout(()=>monsterBox.classList.remove("shake"),400);
+
+    log.innerHTML=crit
+        ? `<span class="crit-text">⚡ CRITICAL HIT! ${dmg}</span>`
+        : `${c.name} menyerang ${dmg} damage`;
+
+    updateUI();
+
+    if(monsterHP<=0){
+        showChoice();
+    }else{
+        setTimeout(monsterAttack,700);
+    }
+}
+
+function monsterAttack(){
+    const c=characters[current];
+    let dmg=Math.floor(Math.random()*monsterAtk)+3;
+    c.hp-=dmg;
+    if(c.hp<0) c.hp=0;
+
+    playerBox.classList.add("shake");
+    setTimeout(()=>playerBox.classList.remove("shake"),400);
+
+    log.innerText+=`\nMonster menyerang ${dmg}`;
+    updateUI();
+
+    if(c.hp<=0){
+        log.innerText=`${c.name} KALAH!`;
+        resetBtn.style.display="inline-block";
+    }
+}
+
+function showChoice(){
+    log.innerText="🎉 Monster dikalahkan!\nPilih hadiah:";
+    choicePanel.style.display="block";
+}
+
+function randomStat(){
+    const c=characters[current];
+    const roll=Math.floor(Math.random()*4);
+    if(roll===0){c.atk+=3;log.innerText="⚔️ Attack +3";}
+    if(roll===1){c.heavy+=5;log.innerText="💥 Heavy +5";}
+    if(roll===2){c.maxHP+=20;log.innerText="❤️ Max HP +20";}
+    if(roll===3){c.crit+=0.05;log.innerText="⚡ Crit +5%";}
+    levelUp();
+}
+
+function healPotion(){
+    const c=characters[current];
+    c.hp=Math.min(c.hp+40,c.maxHP);
+    log.innerText="🧪 Heal Potion +40 HP";
+    levelUp();
+}
+
+function levelUp(){
+    const c=characters[current];
+    c.level++;
+    monsterMaxHP+=25;
+    monsterHP=monsterMaxHP;
+    monsterAtk+=2;
+    choicePanel.style.display="none";
+    updateUI();
+}
+
+updateUI();
+</script>
+
+</body>
+</html>
+message.txt
+7 KB
